@@ -1,17 +1,19 @@
 from pydantic import BaseModel
 
 
-class Aduio(BaseModel):
-    class Task:
-        class AnnotationGroup:
-            name: str
-            label: list[str]
-        
-        feedback: str
-        visualization: str
-        annotationGroup: list[AnnotationGroup]
-        url: str
-        alwaysShowTags: bool
-    
+class AnnotationGroup(BaseModel):
+    name: str
+    label: list[str]
+
+
+class Task(BaseModel):
+    feedback: str
+    visualization: str
+    annotationGroup: list[AnnotationGroup]
+    url: str
+    alwaysShowTags: bool
+
+
+class Audio(BaseModel):
     id: int
     task: Task
