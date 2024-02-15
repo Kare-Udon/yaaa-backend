@@ -13,11 +13,11 @@ def get_new_audio(id: int):
     c = conn.cursor()
 
     # Get the song from the song table
-    c.execute('SELECT * FROM song WHERE id = ?', (id + 1,))
+    c.execute('SELECT * FROM song WHERE id = ?', (id))
     audio = c.fetchone()
     while audio[2] == 1:
         id += 1
-        c.execute('SELECT * FROM song WHERE id = ?', (id + 1,))
+        c.execute('SELECT * FROM song WHERE id = ?', (id))
         audio = c.fetchone()
 
     # Close the connection
@@ -27,9 +27,25 @@ def get_new_audio(id: int):
     audio = Audio(id=audio[0], task=Task(
         feedback=audio_config["feedback"],
         visualization=audio_config["visualization"],
-        annotationGroup=[AnnotationGroup(name="default", label=audio_config["tags"])],
+        annotationGroup=[AnnotationGroup(
+            name="default", label=audio_config["tags"])],
         url=audio[1],
         alwaysShowTags=audio_config["always_show_tags"]
     ))
 
     return audio
+
+
+def get_file_url(id: int):
+    # Connect to the database
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+
+    # Get the song from the song table
+    c.execute('SELECT * FROM song WHERE id = ?', (id))
+    audio = c.fetchone()
+
+    # Close the connection
+    conn.close()
+
+    return audio[1]
