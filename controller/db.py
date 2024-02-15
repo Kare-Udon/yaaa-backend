@@ -13,11 +13,11 @@ def get_new_audio(id: int):
     c = conn.cursor()
 
     # Get the song from the song table
-    c.execute('SELECT * FROM song WHERE id = ?', (id))
+    c.execute('SELECT * FROM song WHERE id = ?', (id,))
     audio = c.fetchone()
     while audio[2] == 1:
         id += 1
-        c.execute('SELECT * FROM song WHERE id = ?', (id))
+        c.execute('SELECT * FROM song WHERE id = ?', (id,))
         audio = c.fetchone()
 
     # Close the connection
