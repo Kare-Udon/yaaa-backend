@@ -1,0 +1,9 @@
+[audio]
+"feedback" = "none"
+"visualization" = "spectrum"
+"tags" = [
+    "test1",
+    "test2",
+    "test3"
+]
+"always_show_tags" = true

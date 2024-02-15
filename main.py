@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from model.audio_data import Audio
 from model.annotation_data import AnnotationData
+from controller.db import get_new_audio
 
 app = FastAPI()
 
@@ -25,25 +26,8 @@ async def root():
 
 
 @app.get("/audio")
-async def get_audio():
-    audio: Audio = {
-        "id": 1,
-        "task": {
-            "feedback": "none",
-            "visualization": "spectrogram",
-            "annotationGroup": [
-                {
-                    "name": "test",
-                    "label": [
-                        "test1",
-                        "test2"
-                    ]
-                }
-            ],
-            "url": "/static/wav/spectrogram_demo_doorknock_mono.wav",
-            "alwaysShowTags": True
-        }
-    }
+async def get_audio(id: int):
+    audio: Audio = get_new_audio(id)
     return audio
 
 

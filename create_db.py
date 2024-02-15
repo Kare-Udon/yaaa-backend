@@ -11,7 +11,8 @@ def create_table(db):
     # Create the song table
     c.execute('''CREATE TABLE IF NOT EXISTS song
                  (id INTEGER PRIMARY KEY,
-                 url VARCHAR(255))''')
+                 url VARCHAR(255),
+                 is_ann INTEGER)''')
     
     # Create the tag table
     c.execute('''CREATE TABLE IF NOT EXISTS tag
@@ -52,7 +53,7 @@ def insert_song(db, url):
     c = conn.cursor()
     
     # Insert the song into the song table
-    c.execute('INSERT INTO song (url) VALUES (?)', (url,))
+    c.execute('INSERT INTO song (url, is_ann) VALUES (?, 0)', (url,))
     
     # Commit the changes and close the connection
     conn.commit()
@@ -62,7 +63,7 @@ def insert_song(db, url):
 @click.command()
 @click.option('-d', '--db', default='./db.sqlite3', help='Sqlite3 database file')
 @click.option('-a', '--audio', default="./audio", help='Audio file folder')
-@click.option('-t', '--tag', help='Annotion tag, seperated by comma')
+@click.option('-t', '--tag', help='Annotion tag, seperated by comma', required=True)
 def create_db(db, audio, tag):
     create_table(db)
     
