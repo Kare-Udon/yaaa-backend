@@ -4,7 +4,7 @@ from fastapi.responses import FileResponse
 
 from model.audio_data import Audio
 from model.annotation_data import AnnotationData
-from controller.db import get_new_audio, get_file_url
+from controller.db import get_new_audio, get_file_url, insert_annotation_data
 
 app = FastAPI()
 
@@ -34,7 +34,8 @@ async def get_audio(id: int):
 
 @app.post("/annotation")
 async def post_annotation(data: AnnotationData):
-    return data
+    insert_annotation_data(data=data)
+    return "200 OK"
 
 
 @app.get("/file")
