@@ -59,6 +59,9 @@ def insert_annotation_data(data: AnnotationData):
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
     
+    # Set song is_ann tag to True
+    c.execute('UPDATE song SET is_ann = 1 WHERE id=?', (data.id,))
+    
     for annotation in data.annotations:
         # Get tag id
         c.execute('SELECT id FROM tag WHERE name = ?', (annotation.annotation,))
