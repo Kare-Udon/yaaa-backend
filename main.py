@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -25,10 +25,11 @@ app.add_middleware(
 async def root():
     return "Yaaa Backend is running!"
 
-
 @app.get("/audio")
 async def get_audio(id: int):
     audio: Audio = get_new_audio(id)
+    if audio is None:
+        raise HTTPException(status_code=400, detail="Audio not found")
     return audio
 
 
@@ -42,3 +43,7 @@ async def post_annotation(data: AnnotationData):
 async def get_file(id: str):
     url = get_file_url(id)
     return FileResponse(url)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

@@ -16,6 +16,8 @@ def get_new_audio(id: int):
     # Get the song from the song table
     c.execute('SELECT * FROM song WHERE id = ?', (id,))
     audio = c.fetchone()
+    if audio is None:
+        return None
     while audio[2] == 1:
         id += 1
         c.execute('SELECT * FROM song WHERE id = ?', (id,))
