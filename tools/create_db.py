@@ -8,8 +8,8 @@ def create_table(db):
     conn = sqlite3.connect(db)
     c = conn.cursor()
     
-    # Create the song table
-    c.execute('''CREATE TABLE IF NOT EXISTS song
+    # Create the audio table
+    c.execute('''CREATE TABLE IF NOT EXISTS audio
                  (id INTEGER PRIMARY KEY,
                  url VARCHAR(255),
                  is_ann INTEGER)''')
@@ -22,11 +22,11 @@ def create_table(db):
     # Create the annotation table
     c.execute('''CREATE TABLE IF NOT EXISTS annotation
                  (id INTEGER PRIMARY KEY,
-                 song_id INTEGER,
+                 audio_id INTEGER,
                  start INTEGER,
                  end INTEGER,
                  tag_id INTEGER,
-                 FOREIGN KEY (song_id) REFERENCES song (id),
+                 FOREIGN KEY (audio_id) REFERENCES audio (id),
                  FOREIGN KEY (tag_id) REFERENCES tag (id))''')
     
     # Commit the changes and close the connection
@@ -47,13 +47,13 @@ def insert_tag(db, name):
     conn.close()
     
 
-def insert_song(db, url):
+def insert_audio(db, url):
     # Connect to the database
     conn = sqlite3.connect(db)
     c = conn.cursor()
     
-    # Insert the song into the song table
-    c.execute('INSERT INTO song (url, is_ann) VALUES (?, 0)', (url,))
+    # Insert the audio into the audio table
+    c.execute('INSERT INTO audio (url, is_ann) VALUES (?, 0)', (url,))
     
     # Commit the changes and close the connection
     conn.commit()
@@ -67,10 +67,10 @@ def insert_song(db, url):
 def create_db(db, audio, tag):
     create_table(db)
     
-    # insert songs into database
+    # insert audio into database
     for root, _, files in os.walk(audio):
         for file in files:
-            insert_song(db, os.path.join(root, file))
+            insert_audio(db, os.path.join(root, file))
     
     # insert tags into database
     for t in tag.split(','):

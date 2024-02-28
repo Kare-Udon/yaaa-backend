@@ -13,14 +13,14 @@ def get_new_audio(id: int):
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
 
-    # Get the song from the song table
-    c.execute('SELECT * FROM song WHERE id = ?', (id,))
+    # Get the audio from the audio table
+    c.execute('SELECT * FROM audio WHERE id = ?', (id,))
     audio = c.fetchone()
     if audio is None:
         return None
     while audio[2] == 1:
         id += 1
-        c.execute('SELECT * FROM song WHERE id = ?', (id,))
+        c.execute('SELECT * FROM audio WHERE id = ?', (id,))
         audio = c.fetchone()
 
     # Close the connection
@@ -44,8 +44,8 @@ def get_file_url(id: int):
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
 
-    # Get the song from the song table
-    c.execute('SELECT * FROM song WHERE id = ?', (id))
+    # Get the audio from the audio table
+    c.execute('SELECT * FROM audio WHERE id = ?', (id))
     audio = c.fetchone()
 
     # Close the connection
@@ -59,8 +59,8 @@ def insert_annotation_data(data: AnnotationData):
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
     
-    # Set song is_ann tag to True
-    c.execute('UPDATE song SET is_ann = 1 WHERE id=?', (data.id,))
+    # Set audio is_ann tag to True
+    c.execute('UPDATE audio SET is_ann = 1 WHERE id=?', (data.id,))
     
     for annotation in data.annotations:
         # Get tag id
@@ -68,7 +68,7 @@ def insert_annotation_data(data: AnnotationData):
         id = c.fetchone()[0]
         
         # Insert annotiation data
-        c.execute('INSERT INTO annotation (start, end, tag_id, song_id) VALUES (?, ?, ?, ?)',
+        c.execute('INSERT INTO annotation (start, end, tag_id, audio_id) VALUES (?, ?, ?, ?)',
                   (annotation.start, annotation.end, id, data.id))
 
     # Commit the changes
