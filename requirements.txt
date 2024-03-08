@@ -1,3 +1,8 @@
+# Annotation backend
 fastapi~=0.109.0
 click~=8.1.7
 toml~=0.10.2
+
+# Datatset creation tools
+librosa~=0.10.1
+pydub~=0.25.1
