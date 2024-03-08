@@ -1,6 +1,7 @@
 import os
 import click
 import sqlite3
+from pathlib import Path
 
 
 def create_table(db):
@@ -47,13 +48,13 @@ def insert_tag(db, name):
     conn.close()
     
 
-def insert_audio(db, url):
+def insert_audio(db, url: Path):
     # Connect to the database
     conn = sqlite3.connect(db)
     c = conn.cursor()
     
     # Insert the audio into the audio table
-    c.execute('INSERT INTO audio (url, is_ann) VALUES (?, 0)', (url,))
+    c.execute('INSERT INTO audio (url, is_ann) VALUES (?, 0)', (str(url.absolute()),))
     
     # Commit the changes and close the connection
     conn.commit()
@@ -70,7 +71,7 @@ def create_db(db, audio, tag):
     # insert audio into database
     for root, _, files in os.walk(audio):
         for file in files:
-            insert_audio(db, os.path.join(root, file))
+            insert_audio(db, Path(root, file))
     
     # insert tags into database
     for t in tag.split(','):
