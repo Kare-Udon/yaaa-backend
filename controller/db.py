@@ -8,8 +8,15 @@ from model.annotation_data import AnnotationData
 audio_config = toml.load('config.toml')['audio']
 
 
-def get_new_audio(id: int):
-    # Connect to the database
+def get_new_audio(id: int) -> Audio:
+    """Get the audio from the database
+
+    Args:
+        id (int): The id of the audio
+
+    Returns:
+        Audio: The audio object
+    """
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
 
@@ -39,8 +46,15 @@ def get_new_audio(id: int):
     return audio
 
 
-def get_file_url(id: int):
-    # Connect to the database
+def get_file_url(id: int) -> str:
+    """Get the file url from the database
+
+    Args:
+        id (int): The id of the audio
+
+    Returns:
+        str: The file url
+    """
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
 
@@ -54,19 +68,37 @@ def get_file_url(id: int):
     return audio[1]
 
 
-def insert_annotation_data(data: AnnotationData):
-    # Connect to the database
+def set_annotated(id: int):
+    """Set the audio is_ann tag to True
+
+    Args:
+        id (int): The id of the audio
+    """
     conn = sqlite3.connect('db.sqlite3')
     c = conn.cursor()
-    
+    c.execute('UPDATE audio SET is_ann=1 WHERE id=?', (id,))
+    conn.commit()
+    conn.close()
+
+
+def insert_annotation_data(data: AnnotationData):
+    """Insert annotation data into the database
+
+    Args:
+        data (AnnotationData): Data to be inserted
+    """
+    conn = sqlite3.connect('db.sqlite3')
+    c = conn.cursor()
+
     # Set audio is_ann tag to True
-    c.execute('UPDATE audio SET is_ann = 1 WHERE id=?', (data.id,))
-    
+    set_annotated(data.id)
+
     for annotation in data.annotations:
         # Get tag id
-        c.execute('SELECT id FROM tag WHERE name = ?', (annotation.annotation,))
+        c.execute('SELECT id FROM tag WHERE name = ?',
+                  (annotation.annotation,))
         id = c.fetchone()[0]
-        
+
         # Insert annotiation data
         c.execute('INSERT INTO annotation (start, end, tag_id, audio_id) VALUES (?, ?, ?, ?)',
                   (annotation.start, annotation.end, id, data.id))
