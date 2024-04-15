@@ -6,6 +6,7 @@ from model.annotation_data import AnnotationData
 
 
 audio_config = toml.load('config.toml')['audio']
+db_config = toml.load('config.toml')['db']
 
 
 def get_new_audio(id: int) -> Audio:
@@ -17,17 +18,17 @@ def get_new_audio(id: int) -> Audio:
     Returns:
         Audio: The audio object
     """
-    conn = sqlite3.connect('db.sqlite3')
+    conn = sqlite3.connect(db_config["file"])
     c = conn.cursor()
 
     # Get the audio from the audio table
-    c.execute('SELECT * FROM audio WHERE id = ?', (id,))
+    c.execute('SELECT * FROM audio WHERE id=?', (id,))
     audio = c.fetchone()
     if audio is None:
         return None
     while audio[2] == 1:
         id += 1
-        c.execute('SELECT * FROM audio WHERE id = ?', (id,))
+        c.execute('SELECT * FROM audio WHERE id=?', (id,))
         audio = c.fetchone()
 
     # Close the connection
@@ -55,11 +56,11 @@ def get_file_url(id: int) -> str:
     Returns:
         str: The file url
     """
-    conn = sqlite3.connect('db.sqlite3')
+    conn = sqlite3.connect(db_config["file"])
     c = conn.cursor()
 
     # Get the audio from the audio table
-    c.execute('SELECT * FROM audio WHERE id = ?', (id))
+    c.execute('SELECT * FROM audio WHERE id=?', (id,))
     audio = c.fetchone()
 
     # Close the connection
@@ -74,7 +75,7 @@ def set_annotated(id: int):
     Args:
         id (int): The id of the audio
     """
-    conn = sqlite3.connect('db.sqlite3')
+    conn = sqlite3.connect(db_config["file"])
     c = conn.cursor()
     c.execute('UPDATE audio SET is_ann=1 WHERE id=?', (id,))
     conn.commit()
@@ -87,7 +88,7 @@ def insert_annotation_data(data: AnnotationData):
     Args:
         data (AnnotationData): Data to be inserted
     """
-    conn = sqlite3.connect('db.sqlite3')
+    conn = sqlite3.connect(db_config["file"])
     c = conn.cursor()
 
     # Set audio is_ann tag to True
@@ -95,13 +96,13 @@ def insert_annotation_data(data: AnnotationData):
 
     for annotation in data.annotations:
         # Get tag id
-        c.execute('SELECT id FROM tag WHERE name = ?',
+        c.execute('SELECT id FROM tag WHERE name=?',
                   (annotation.annotation,))
         id = c.fetchone()[0]
 
         # Insert annotiation data
         c.execute('INSERT INTO annotation (start, end, tag_id, audio_id) VALUES (?, ?, ?, ?)',
-                  (annotation.start, annotation.end, id, data.id))
+                  (annotation.start, annotation.end, id, data.id,))
 
     # Commit the changes
     conn.commit()
