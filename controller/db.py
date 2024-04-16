@@ -91,9 +91,6 @@ def insert_annotation_data(data: AnnotationData):
     conn = sqlite3.connect(db_config["file"])
     c = conn.cursor()
 
-    # Set audio is_ann tag to True
-    set_annotated(data.id)
-
     for annotation in data.annotations:
         # Get tag id
         c.execute('SELECT id FROM tag WHERE name=?',
@@ -109,3 +106,6 @@ def insert_annotation_data(data: AnnotationData):
 
     # Close the connection
     conn.close()
+    
+    # Set audio is_ann tag to True
+    set_annotated(data.id)
