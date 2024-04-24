@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -77,7 +79,7 @@ async def get_file(id: str):
         FileResponse: The return file response
     """
     url = get_file_url(id)
-    return FileResponse(url)
+    return FileResponse(Path(url))
 
 
 if __name__ == "__main__":
