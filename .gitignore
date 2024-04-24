@@ -166,3 +166,5 @@ launch.json
 audio/
 *.sqlite3
 config.toml
+annotated/
+datasets/
