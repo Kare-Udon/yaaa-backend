@@ -7,3 +7,4 @@ toml~=0.10.2
 # Dataset creation tools
 librosa~=0.10.1
 pydub~=0.25.1
+pandas~=2.0
