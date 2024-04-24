@@ -5,6 +5,7 @@ import uuid
 
 import click
 from pydub import AudioSegment
+from pandas import DataFrame
 
 
 def get_tag_dict(db: str):
@@ -23,7 +24,7 @@ def get_tag_dict(db: str):
     return tag_dict
 
 
-def output_audio(db: str, output: str):
+def output_dataset(db: str, output: str, name: str):
     conn = sqlite3.connect(db)
 
     c = conn.cursor()
@@ -39,6 +40,9 @@ def output_audio(db: str, output: str):
     # get annotations
     c.execute('SELECT audio_id, start, end, tag_id FROM annotation')
     annotations = c.fetchall()
+    
+    # dataset DataFrame
+    df = DataFrame(columns=["file_name", "duration", "tag"])
 
     for anno in annotations:
         audio_id = anno[0]
@@ -49,10 +53,14 @@ def output_audio(db: str, output: str):
         audio = AudioSegment.from_file(audio_set[audio_id])
         audio = audio[start:end]
         # file name format: uuid-duration.wav
+        uuid_str = str(uuid.uuid4()).split('-')[-1]
         audio.export(Path(output,
                           tag,
-                          f"{str(uuid.uuid4()).split('-')[-1]}-{end - start}.wav"),
+                          f"{uuid_str}-{end - start}.wav"),
                      format="wav")
+        df.loc[len(df)] = [f"{uuid_str}-{end - start}.wav", end - start, tag]
+        
+    df.to_csv(Path(output, f"{name}.csv"), index=False)
 
     print(f"Processed {len(annotations)} annotations.")
 
@@ -60,14 +68,17 @@ def output_audio(db: str, output: str):
 @click.command()
 @click.option('-d', '--db', default='./db.sqlite3', help='Sqlite3 database file')
 @click.option('-o', '--output', default="./dataset", help='Output folder')
-def main(db: str, output: str):
+@click.option('-n', '--name', default="dataset", help='Output dataset name')
+def main(db: str, output: str, name: str):
+    os.makedirs(output, exist_ok=True)
+    
     tags = get_tag_dict(db)
     # create output folders for tags
     for tag in tags.values():
         os.makedirs(Path(output, tag), exist_ok=True)
 
-    # output audio
-    output_audio(db, output)
+    # output dataset
+    output_dataset(db, output, name)
 
 
 if __name__ == '__main__':
