@@ -71,7 +71,10 @@ def create_db(db, audio, tag):
     # insert audio into database
     for root, _, files in os.walk(audio):
         for file in files:
-            insert_audio(db, Path(root, file).readlink().resolve())
+            path = Path(root, file)
+            if path.is_symlink():
+                path = Path(root, file).readlink()
+            insert_audio(db, path.resolve())
     
     # insert tags into database
     for t in tag.split(','):
