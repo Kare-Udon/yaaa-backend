@@ -8,9 +8,9 @@ import click
 def cut_audio(path: Path, output: Path):
     audio = AudioSegment.from_file(path)
 
-    # split into 30s segments, with 5s overlap
-    interval = 30 * 1000
-    overlap = 5 * 1000
+    # split into 10s segments, with 1s overlap
+    interval = 10 * 1000
+    overlap = 1 * 1000
     for i in range(0, len(audio), interval - overlap):
         audio[i:i+interval].export(output /
                                    f"{path.stem}_{i//1000}.wav", format="wav")
